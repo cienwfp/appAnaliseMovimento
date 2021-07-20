@@ -28,12 +28,9 @@ secret = config.get("geral", "SECRET_JWT"),
 
 def inicio():
     print("Entre com suas credenciais do MINERVA")
-
-    email = 'wandersonfpneto@pcivil.rj.gov.br'
-    password = 'wwhh2222helen@'
     
-    #email = str(input('Entre com o email: '))
-    #password = str(input('Digite a sua senha: '))
+    email = str(input('Entre com o email: '))
+    password = str(input('Digite a sua senha: '))
 
     status, data = loginMinerva.login(email, password)
 
@@ -99,9 +96,6 @@ def inicio():
             dataInicial = str(input('Data inicial (ex:XX/XX/XXXX): '))
             dataFinal = str(input('Data Final (ex:XX/XX/XXXX): '))
             
-            gpsRaio = '-22.904399,-43.190731,200'
-            dataInicial = '01/06/2021 12:00'
-            dataFinal = '01/06/2021 13:30'
             
             print('Obtendo dados...')
             
