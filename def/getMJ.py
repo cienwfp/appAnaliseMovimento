@@ -56,3 +56,54 @@ class getMJ():
             dados = response.json()
 
         return(msg, dados)
+    
+    
+    def getListaLocal(lat, long, r, token, cpf):
+        
+        msg = ''
+
+        url = str('https://devveiculos.azurewebsites.net/local/locais/?latitude=' + str(lat) + '&longitude=' + str(long) + '&raio=' + str(r))
+
+        payload = {}
+        files = {}
+        headers = {
+        'Authorization': token,
+        'usuario': cpf, 
+        }
+
+        response = requests.request("GET", url, headers=headers, data = payload, files = files)
+        
+        if response.status_code != 200:
+            mgs = str(response)
+            dados = []
+        else:
+            dados = response.json()
+        
+        print('aqui', dados)
+
+        return(msg, dados)
+    
+    def reqIdLocalPeriodo(local, dataHoraInicial, dataHoraFinal, token, cpf):
+            
+        msg = ''
+
+        url = str('https://devveiculos.azurewebsites.net/movimentos/local/'+str(local)+'/periodo?dataHoraFinal='+str(dataHoraFinal)+'&dataHoraInicial='+str(dataHoraInicial))
+              
+        print(url)
+          
+        payload = {}
+        files = {}
+        headers = {
+        'Authorization': token,
+        'usuario': cpf}
+
+        response = requests.request("GET", url, headers=headers, data = payload, files = files)
+        
+        if response.status_code != 200:
+            mgs = str(response)
+            dados = []
+        else:
+            dados = response.json()
+
+        print(dados)
+        return(msg, dados)

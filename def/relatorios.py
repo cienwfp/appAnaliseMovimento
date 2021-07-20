@@ -18,14 +18,100 @@ class relatorios():
         page_num = canvas.getPageNumber()
         text = "Pag %s" % page_num
         canvas.drawRightString(200*mm, 10*mm, text)
+        
+        
+    def relatorioOpcao1(name, cpf, placa, table):
+        
+        '''
+        Report of Option one. This has content of the
+        ten last observations of the veficle
+        '''
+        
+        if os.path.isdir(os.getcwd() + '/report/' + str(cpf)):
+            rep = os.getcwd() + '/report/' + str(cpf) + str('/reportOption1.pdf')
+        else: 
+            os.makedirs(os.getcwd() + '/report/' + str(cpf))
+            rep = os.getcwd() + '/report/' + str(cpf) + str('/reportOption1.pdf')
+            
+        doc = SimpleDocTemplate(rep,pagesize=(A4),
+                                rightMargin=30,leftMargin=30,
+                                topMargin=30,bottomMargin=30)
+
+
+        styles=getSampleStyleSheet()
+
+        Story=[]
+        logo = os.getcwd() + '/payload/' + str('logo.png')
+        formatted_time = time.ctime()
+        
+        
+        #### Página 2 ######################################################################
+
+
+        im = Image(logo, 20*mm, 20*mm)
+        im.hAlign = 'LEFT'
+        Story.append(im)
+        Story.append(Spacer(1, 48))
+
+        styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY))
+        ptext = '<font size="12">Olá senhor %s</font>' %(name)
+        Story.append(Paragraph(ptext, styles["Justify"]))
+        Story.append(Spacer(1, 12))
+
+        ptext = '<font size="12">Este relatório foi produzido seguindo os seguintes parâmetros de pesquisa:</font>'
+        Story.append(Paragraph(ptext, styles["Justify"]))
+        Story.append(Spacer(1, 12))
+
+        ptext = '<font size="12">Placa: %s</font>'%(placa)
+        Story.append(Paragraph(ptext, styles["Justify"]))
+
+        
+        Story.append(Spacer(1, 36))
+        
+        styleN = styles["Normal"]
+        # Make heading for each column and start data list
+        column1Heading = "COLUMN ONE HEADING"
+        column2Heading = "COLUMN TWO HEADING"
+        # Assemble data for each column using simple loop to append it into data list
+        data = [[column1Heading,column2Heading]]
+
+        #for i in table:
+        #    data.append([str(i),str(i)])
+
+        data_ = table.drop(columns = ['idMovimento'])
+
+        data = [data_.columns[:,].values.astype(str).tolist()] + data_.values.tolist()
+
+        tableThatSplitsOverPages = Table(data, repeatRows=1)
+        tableThatSplitsOverPages.hAlign = 'CENTER'
+        tblStyle = TableStyle([('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                               ('FONTSIZE',(0,0),(-1,-1),5.5),
+                               ('VALIGN',(0,0),(-1,-1),'TOP'),
+                               ('LINEBELOW',(0,0),(-1,-1),1,colors.black),
+                               ('BOX',(0,0),(-1,-1),1,colors.black),
+                               ('BOX',(0,0),(-1,-1),1,colors.black)])
+        tblStyle.add('BACKGROUND',(0,0),(-1,0),colors.lightblue)
+        tblStyle.add('BACKGROUND',(0,1),(-1,-1),colors.white)
+        tableThatSplitsOverPages.setStyle(tblStyle)
+        Story.append(tableThatSplitsOverPages)
+        
+        doc.build(Story,onFirstPage=relatorios.addPageNumber, onLaterPages=relatorios.addPageNumber)
+        
+      
+
 
     def relatorioOpcao2(name, cpf, placa, dataInicial, dataFinal, table):
 
+        '''
+        Report of Option two. This has data between periods.
+        This produce graph.
+        '''
+        
         if os.path.isdir(os.getcwd() + '/report/' + str(cpf)):
-            rep = os.getcwd() + '/report/' + str(cpf) + str('/report.pdf')
+            rep = os.getcwd() + '/report/' + str(cpf) + str('/reportOption2.pdf')
         else: 
             os.makedirs(os.getcwd() + '/report/' + str(cpf))
-            rep = os.getcwd() + '/report/' + str(cpf) + str('/report.pdf')
+            rep = os.getcwd() + '/report/' + str(cpf) + str('/reportOption2.pdf')
             
         doc = SimpleDocTemplate(rep,pagesize=(A4),
                                 rightMargin=30,leftMargin=30,

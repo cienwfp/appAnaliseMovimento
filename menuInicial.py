@@ -17,9 +17,9 @@ import sys
 from jose import jwt
 
 import loginMinerva 
-import getMJ
+from getMJ import getMJ
 from graph import graph
-import opcao2
+from opcao import opcao
 from relatorios import relatorios
  
 config = configparser.ConfigParser()
@@ -29,8 +29,11 @@ secret = config.get("geral", "SECRET_JWT"),
 def inicio():
     print("Entre com suas credenciais do MINERVA")
 
-    email = str(input('Entre com o email: '))
-    password = str(input('Digite a sua senha: '))
+    email = 'wandersonfpneto@pcivil.rj.gov.br'
+    password = 'wwhh2222helen@'
+    
+    #email = str(input('Entre com o email: '))
+    #password = str(input('Digite a sua senha: '))
 
     status, data = loginMinerva.login(email, password)
 
@@ -57,35 +60,56 @@ def inicio():
        
     while True:
         print('Digite a opção desejada:')
-        print('Digite 1: Para busca por coordenadas GPS e raio')
+        print('Digite 1: Para busca simples')
         print('Digite 2: Para relatório por período')
+        print('Digite 3: Para busca por coordenadas GPS e raio')
         print('Digite q: Para finalizar')
-        opcao = input('Opção: ')
+        op = input('Opção: ')
 
-        if opcao == 'q':
+        if op == 'q':
             break
 
         if opcao == '1':
-            placa = str(input('Digite a placa: '))
+            placa = str(input('Digite a placa (ex:AAA0000 ou AAA0A00): '))
             print('Obtendo dados...')
             msg, dados = getMJ.getMovimentoSimple(placa, tokenMJ, credenciais['cpf']) 
             if msg == '':
                 print('Dados Obtidos com sucesso')
+                relatorios.relatorioOpcao1(credenciais['first_name'], credenciais['cpf'], placa, dados)
             else:
                 print('Ocorreu um erro na obtenção dos dados. Erro: ', msg)
         
-        if opcao == '2':
+        if op == '2':
             placa = str(input('Digite a placa (ex:AAA0000 ou AAA0A00): '))
             dataInicial = str(input('Data inicial (ex:XX/XX/XXXX): '))
             dataFinal = str(input('Data Final (ex:XX/XX/XXXX): '))
             print('Obtendo dados...')
             
-            table = opcao2.opcao2(placa, dataInicial, dataFinal, tokenMJ, credenciais['cpf'])
+            table = opcao.opcao2(placa, dataInicial, dataFinal, tokenMJ, credenciais['cpf'])
             if table.empty:
                 print('Erro: Os dados retornaram vazios')
             else:
                 graph.analiseGraficaOpcao2(table, credenciais['cpf'])
-                relatorios.relatorioOpcao2(credenciais['first_name'], credenciais['cpf'], placa, dataInicial, dataFinal, table)
+                relatorios.relatorioOpcao2(credenciais['first_name'], credenciais['cpf'], placa, dataInicial, dataFinal, table)     
+            
+        if op == '3':
+            #placa = str(input('Digite a placa (ex:AAA0000 ou AAA0A00): '))
+            print('Digite a latitude, longitude e raio (metros)')
+            gpsRaio = str(input('Exemplo (-XX.XXXXX, -XX.XXXXX, XX: '))
+            dataInicial = str(input('Data inicial (ex:XX/XX/XXXX): '))
+            dataFinal = str(input('Data Final (ex:XX/XX/XXXX): '))
+            
+            gpsRaio = '-22.904399,-43.190731,200'
+            dataInicial = '01/06/2021 12:00'
+            dataFinal = '01/06/2021 13:30'
+            
+            print('Obtendo dados...')
+            
+            table = opcao.opcao3(gpsRaio, dataInicial, dataFinal, tokenMJ, credenciais['cpf'])
+            if table.empty:
+                print('Erro: Os dados retornaram vazios')
+            #else:
                 
-            
-            
+                #graph.analiseGraficaOpcao2(table, credenciais['cpf'])
+                #relatorios.relatorioOpcao2(credenciais['first_name'], credenciais['cpf'], placa, dataInicial, dataFinal, table)
+                
